@@ -9,6 +9,7 @@ class App extends Component {
             sections: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleInputChange(event) {
@@ -19,6 +20,20 @@ class App extends Component {
         });
     }
 
+    handleSubmit(event) {
+        event.preventDefault()
+        axios.post('/sections', { 
+            title: this.state.sectionTitle,
+            description: this.state.sectionDesc,
+        }).then(response => {
+            this.setState({
+                sections: [response.data, ...this.state.sections],
+                sectionTitle: '',
+                sectionDesc: '',
+            })
+        })
+    }
+
     render() {
         return (
             <div className="container">
@@ -27,7 +42,7 @@ class App extends Component {
                         <div className="card">
                             <div className="card-header">Разделы</div>
                             <div className="card-body">
-                                <form>
+                                <form onSubmit={this.handleSubmit}>
                                     <div className="form-group">
                                         <label htmlFor="sectionTitlle">
                                             Название раздела:

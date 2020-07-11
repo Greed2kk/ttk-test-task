@@ -1,15 +1,18 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
+import LoadingSpinner from "./Spinner"
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: true,
             sectionTitle: "",
             sectionDesc: "",
             sections: []
         };
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.renderSections = this.renderSections.bind(this)
     }
 
     handleInputChange(event) {
@@ -34,13 +37,39 @@ class App extends Component {
         })
     }
 
+    renderSections(){
+        return this.state.sections.map(section => (
+            <div key={section.id} className="media">
+                <div className="media-body">
+                    <div>
+                        {section.title}
+                    </div>
+                </div>
+            </div>
+        )) 
+    }
+
+    getSections() {
+        axios.get('/sections').then((response) => {
+            return this.setState({
+                loading: false,
+                sections: [...response.data.sections],
+            })
+        })
+    }
+
+    componentDidMount(){
+        this.getSections()
+    }
+
+
     render() {
         return (
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8">
                         <div className="card">
-                            <div className="card-header">Разделы</div>
+                            <div className="card-header">Создать раздел</div>
                             <div className="card-body">
                                 <form onSubmit={this.handleSubmit}>
                                     <div className="form-group">
@@ -79,9 +108,16 @@ class App extends Component {
                                     >
                                         Создать раздел
                                     </button>
-                                </form>
+                                </form>                            
                             </div>
                         </div>
+                        <div className="card" style={{ marginTop: '10px' }}>
+                            <div className="card-header">Актуальные разделы</div>
+                            <div className="card-body">
+                            {this.state.loading ? <LoadingSpinner /> : this.renderSections()}
+                            </div>
+                        </div>
+                        <div/>   
                     </div>
                 </div>
             </div>

@@ -1,5 +1,8 @@
 import React, { Component } from "react"
 import LoadingSpinner from "./Spinner"
+import SectionFormEdit from "./SectionFormEdit"
+import { Link } from 'react-router-dom'
+
 
 class App extends Component {
     constructor(props) {
@@ -9,10 +12,12 @@ class App extends Component {
             sectionTitle: "",
             sectionDesc: "",
             sections: []
-        };
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.renderSections = this.renderSections.bind(this)
+        }
+        
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.renderSections = this.renderSections.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     handleInputChange(event) {
@@ -24,100 +29,102 @@ class App extends Component {
     }
 
     handleSubmit(event) {
-        event.preventDefault()
-        axios.post('/sections', { 
-            title: this.state.sectionTitle,
-            description: this.state.sectionDesc,
-        }).then(response => {
-            this.setState({
-                sections: [response.data, ...this.state.sections],
-                sectionTitle: '',
-                sectionDesc: '',
+        event.preventDefault();
+        axios
+            .post("/sections", {
+                title: this.state.sectionTitle,
+                description: this.state.sectionDesc
             })
-        })
+            .then(response => {
+                this.setState({
+                    sections: [response.data, ...this.state.sections],
+                    sectionTitle: "",
+                    sectionDesc: ""
+                })
+            })
     }
 
-    renderSections(){
+    renderSections() {
         return this.state.sections.map(section => (
             <div key={section.id} className="media">
-                <div className="media-body">
-                    <div>
-                        {section.title}
+                <div
+                    className="media-body border border-danger rounded ml-auto p-1"
+                    style={{ marginTop: "10px" }}
+                >
+                    <div
+                        className="media-content"
+                        style={{ marginBottom: "10px" }}
+                    >
+                        <b>Название раздела: </b> {section.title} <br />{" "}
+                        <b>Описание раздела:</b> {section.description}
+                        <div className="buttons-group">
+                            <button
+                                onClick={() => this.handleDelete(section.id)}
+                                className="btn btn-sm ml-auto mr-1 btn-danger float-right"
+                            >
+                                Удалить
+                            </button>
+                            <Link
+                                to={`/${section.id}/edit`}
+                                className="btn btn-sm ml-auto mr-1 btn-primary float-right"
+                            >
+                                Изменить
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
-        )) 
+        ));
     }
 
     getSections() {
-        axios.get('/sections').then((response) => {
+        axios.get("/sections").then(response => {
             return this.setState({
                 loading: false,
-                sections: [...response.data.sections],
+                sections: [...response.data.sections]
             })
         })
     }
 
-    componentDidMount(){
-        this.getSections()
+    componentDidMount() {
+        this.getSections();
     }
 
+    handleDelete(id) {
+        const isNotId = section => section.id !== id;
+        const updatedSections = this.state.sections.filter(isNotId);
+        this.setState({ sections: updatedSections });
+
+        axios.delete(`/sections/${id}`);
+    }
 
     render() {
         return (
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">Создать раздел</div>
+                        <SectionFormEdit
+                            actionName="Создать раздел"
+                            handleSubmit={this.handleSubmit}
+                            handleInputChange={this.handleInputChange}
+                            valueTitle={this.state.sectionTitle}
+                            valueDesc={this.state.sectionDesc}
+                            formTitle="Создание"
+                            formAction="Создать"
+                        />
+                        <div className="card" style={{ marginTop: "10px" }}>
+                            <div className="card-header">
+                                Актуальные разделы
+                            </div>
                             <div className="card-body">
-                                <form onSubmit={this.handleSubmit}>
-                                    <div className="form-group">
-                                        <label htmlFor="sectionTitlle">
-                                            Название раздела:
-                                        </label>
-                                        <input
-                                            onChange={this.handleInputChange}
-                                            name="sectionTitle"
-                                            value={this.state.sectionTitle}
-                                            className="form-control"
-                                            id="sectionTitlle"
-                                            maxLength="150"
-                                            placeholder="Введите название раздела"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="sectionDesc">
-                                            Описание:
-                                        </label>
-                                        <textarea
-                                            onChange={this.handleInputChange}
-                                            name="sectionDesc"
-                                            value={this.state.sectionDesc}
-                                            className="form-control"
-                                            id="sectionDesc"
-                                            rows="2"
-                                            maxLength="500"
-                                            placeholder="Введите текст описания"
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary"
-                                    >
-                                        Создать раздел
-                                    </button>
-                                </form>                            
+                                {this.state.loading ? (
+                                    <LoadingSpinner />
+                                ) : (
+                                    this.renderSections()
+                                )}
                             </div>
                         </div>
-                        <div className="card" style={{ marginTop: '10px' }}>
-                            <div className="card-header">Актуальные разделы</div>
-                            <div className="card-body">
-                            {this.state.loading ? <LoadingSpinner /> : this.renderSections()}
-                            </div>
-                        </div>
-                        <div/>   
+                        <div />
                     </div>
                 </div>
             </div>

@@ -6,3 +6,8 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.media-content {
+    word-break: break-word;
+    word-wrap: break-word;
+}

@@ -13,8 +13,8 @@ class SectionController extends Controller
 
     public function index(Request $request, Section $section)
     {
-        $allSections = $section->whereIn('user_id', $request->user())->with('user');
-        $sections = $allSections->orderBy('created_at', 'desc')->take(20)->get(); 
+        //$allSections = $section->whereIn('user_id', $request->user())->with('user');
+        $sections = $section->orderBy('created_at', 'desc')->take(20)->get(); 
 
         return response()->json([
             'sections' => $sections,
@@ -50,16 +50,22 @@ class SectionController extends Controller
 
     public function edit($id)
     {
-        //
+        $section = Section::findOrFail($id);
+        return response()->json([
+            'section' => $section,
+        ]);
     }
 
     public function update(Request $request, $id)
     {
-        //
+        $input = $request->all();
+        $section = Section::findOrFail($id);
+        $section->update($input);
+        return response()->json($section->with('user')->find($section->id));
     }
 
     public function destroy($id)
     {
-        //
+        Section::findOrFail($id)->delete();
     }
 }

@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'role',
     ];
 
     /**
@@ -31,6 +31,30 @@ class User extends Authenticatable
     public function sections() {
         return $this->hasMany(Section::class);
     }
+
+    public function books()
+  {
+    return $this->hasMany(Book::class);
+  }
+
+  public function canEdit()
+  {
+    $role = $this->role;
+    if ($role == "user" || $role == "admin") {
+      return true;
+    }
+    return false;
+  }
+
+  public function isAdmin()
+  {
+    $role = $this->role;
+    if ($role == "admin") {
+        return true;
+    }
+    return false;
+        
+  }
 
     /**
      * The attributes that should be cast to native types.

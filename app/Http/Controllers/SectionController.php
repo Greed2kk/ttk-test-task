@@ -7,14 +7,14 @@ use App\Section;
 
 class SectionController extends Controller
 {
-    public function __constructor(){
+    public function __constructor()
+    {
         $this->middleware('auth');
     }
 
     public function index(Request $request, Section $section)
     {
-        //$allSections = $section->whereIn('user_id', $request->user())->with('user');
-        $sections = $section->orderBy('created_at', 'desc')->take(20)->get(); 
+        $sections = $section->orderBy('created_at', 'desc')->take(20)->get();
 
         return response()->json([
             'sections' => $sections,
@@ -30,17 +30,18 @@ class SectionController extends Controller
     {
         //server validation
         $this->validate($request, [
-            'title' => 'required|max:150', //title or sectionTitle
-            'description' => 'required|max:500', //description or sectionDesc
+            'title' => 'required|max:150',
+            'description' => 'required|max:500',
         ]);
-
-        $section = $request->user()->sections()->create([
-            'title' => $request->title, //тут мб title() тут проверка того кто создал задачу
-            'description' => $request->description 
-        ]);
-
-        return response()->json($section->with('user')->find($section->id));
-
+        if ($request->user()->isAdmin()) {
+            $section = $request->user()->sections()->create([
+                'title' => $request->title,
+                'description' => $request->description
+            ]);
+            return response()->json($section->with('user')->find($section->id));
+        } else {
+            return response('Access denied.', 403);
+        }
     }
 
     public function show($id)
@@ -48,24 +49,34 @@ class SectionController extends Controller
         //
     }
 
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        $section = Section::findOrFail($id);
-        return response()->json([
-            'section' => $section,
-        ]);
+
+        if ($request->user()->isAdmin()) {
+            $section = Section::findOrFail($id);
+            return response()->json([
+                'section' => $section,
+            ]);
+        }
+        return response('Access denied.', 403);
     }
 
     public function update(Request $request, $id)
-    {
+    {   
+        if ($request->user()->isAdmin()) {
         $input = $request->all();
         $section = Section::findOrFail($id);
         $section->update($input);
         return response()->json($section->with('user')->find($section->id));
+        }
+        return response('Access denied.', 403);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
-        Section::findOrFail($id)->delete();
+        if ($request->user()->isAdmin()) {
+            Section::findOrFail($id)->delete();
+        }
+        return response('Access denied.', 403);
     }
 }

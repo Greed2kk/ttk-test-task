@@ -41,6 +41,12 @@ class App extends Component {
                     sectionTitle: "",
                     sectionDesc: ""
                 })
+            
+            })
+            .catch(err => { 
+                if (err.response) { 
+                  alert("Только админ может создавать разделы")
+                }
             })
     }
 
@@ -95,7 +101,7 @@ class App extends Component {
         const updatedSections = this.state.sections.filter(isNotId);
         this.setState({ sections: updatedSections });
 
-        axios.delete(`/sections/${id}`);
+        axios.delete(`/sections/${id}`)
     }
 
     render() {

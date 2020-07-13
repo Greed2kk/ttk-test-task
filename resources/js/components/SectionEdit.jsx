@@ -25,9 +25,9 @@ class SectionEdit extends Component {
     handleSubmit(event) {
         event.preventDefault();
         axios.put(`/sections/${this.props.match.params.id}`, {
-                title: this.state.sectionTitle,
-                description: this.state.sectionDesc,
-            })
+            title: this.state.sectionTitle,
+            description: this.state.sectionDesc,
+        })
             .then(() => {
                 this.props.history.push('/')
             })
@@ -42,8 +42,8 @@ class SectionEdit extends Component {
             })
         )
     }
- 
-    componentDidMount(){
+
+    componentDidMount() {
         this.getSections()
     }
 
@@ -53,12 +53,12 @@ class SectionEdit extends Component {
                 <div className="row justify-content-center">
                     <div className="col-md-8">
                         <SectionFormEdit
-                                 handleSubmit={this.handleSubmit}
-                                 handleInputChange={this.handleChange}
-                                 valueTitle={this.state.sectionTitle}
-                                 valueDesc={this.state.sectionDesc} 
-                                 formTitle='Измение'
-                                 formAction='Изменить'
+                            handleSubmit={this.handleSubmit}
+                            handleInputChange={this.handleChange}
+                            valueTitle={this.state.sectionTitle}
+                            valueDesc={this.state.sectionDesc}
+                            formTitle='Измение'
+                            formAction='Изменить'
                         />
                         <div />
                     </div>

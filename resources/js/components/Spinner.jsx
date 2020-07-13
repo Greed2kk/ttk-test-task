@@ -1,6 +1,7 @@
 import React from "react"
 
-const LoadingSpinner = () => (
+
+const Spinner = () => (
     <div className="d-flex justify-content-center">
         <div className="spinner-border text-danger" role="status">
             <span className="sr-only">Loading...</span>
@@ -8,4 +9,4 @@ const LoadingSpinner = () => (
     </div>
 )
 
-export default LoadingSpinner;
+export default Spinner;

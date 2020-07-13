@@ -77,6 +77,9 @@ class SectionController extends Controller
         if ($request->user()->isAdmin()) {
             Section::findOrFail($id)->delete();
         }
-        return response('Access denied.', 403);
+        else{
+            return response('Access denied.', 403);
+        }
+        
     }
 }

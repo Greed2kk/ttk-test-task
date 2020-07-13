@@ -38,8 +38,6 @@ class Books extends Component {
                 )
             }
         }, this)
-     
-        
     }
 
     render() {
@@ -60,8 +58,6 @@ class Books extends Component {
             </table>
         )
     }
-
-
 }
 
 export default Books
